@@ -1,0 +1,2 @@
+# LogicGamer.Core
+LogicGamer.Core
