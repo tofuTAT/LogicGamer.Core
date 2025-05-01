@@ -20,3 +20,6 @@ obj/
 ########################################
 .vscode/
 *.code-workspace
+
+#仅clea-code分支使用 冲突记得解决
+*.csproj
