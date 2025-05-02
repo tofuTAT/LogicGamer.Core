@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using LogicGamer.Core.Attributes;
 using LogicGamer.Core.Engine;
 using LogicGamer.Core.Tool;
 using LogicGamer.Core.Tool.Log;
@@ -11,16 +12,10 @@ namespace LogicGamer.Core
     {
         private static Dictionary<Type,IEngine> _engines = new Dictionary<Type,IEngine>();
 
-        private static Logger printer;
-        
-        public static Logger Printer()
+        private static ILog printer;
+        public static void Init(ILog logger)
         {
-            return printer;
-        }
-
-        public static void Init(ILog logger,LogLevel level)
-        {
-            printer = new Logger(logger,level);
+            printer = logger;
             if (_engines==null)
             {
                 _engines = new Dictionary<Type, IEngine>();
@@ -37,8 +32,8 @@ namespace LogicGamer.Core
         {
             foreach (var item in _engines)
             {
-                args.TryGetValue(item.Key, out var data);
-                item.Value.OnStart(data);
+                args.TryGetValue(item.Key, out var userdata);
+                item.Value.OnStart(userdata);
             }
         }
         
@@ -72,6 +67,31 @@ namespace LogicGamer.Core
 
             return value;
         }
+
+        #region log
+
+        [QuicklyEntry(Constants.QuicklyGroup.LOG_ROOT,"Error","错误输出")]
+        public static void Error(string message)
+        {
+            printer.Print(LogLevel.Error,message);
+        }
+        [QuicklyEntry(Constants.QuicklyGroup.LOG_ROOT,"Warning","警告输出")]
+        public static void Warning(string message)
+        {
+            printer.Print(LogLevel.Warning,message);
+        }
+        [QuicklyEntry(Constants.QuicklyGroup.LOG_ROOT,"Info","信息输出")]
+        public static void Info(string message)
+        {
+            printer.Print(LogLevel.Info,message);
+        }
+        [QuicklyEntry(Constants.QuicklyGroup.LOG_ROOT,"Debug","调试输出")]
+        public static void Debug(string message)
+        {
+            printer.Print(LogLevel.Debug,message);
+        }
+
+        #endregion
     }
 }
 

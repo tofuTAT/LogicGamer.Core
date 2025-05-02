@@ -65,7 +65,10 @@ namespace LogicGamer.Core.Engine.Fsm
             var oldState = CurrentState;
             CurrentState = registeredState;
             CurrentState.OnEnter(this,userdata);
-            Userdata.GetObjectPool().Return(userdata);
+            if (userdata!=null)
+            {
+                Userdata.GetObjectPool().Return(userdata);
+            }
             OnStateChange?.Invoke(oldState,CurrentState);
             StateStartTime = DateTime.Now;
         }

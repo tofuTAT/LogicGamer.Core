@@ -7,7 +7,7 @@ namespace LogicGamer.Core.Tool.ObjectPool
         private readonly Stack<T> _pool = new Stack<T>();
         private readonly object _lock = new object(); // 锁对象
 
-        //当前等待数量
+        //当前对象数量
         public int CurrentSize => _pool?.Count ?? 0;
 
         /// <summary>

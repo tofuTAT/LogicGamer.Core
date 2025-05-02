@@ -1,6 +1,8 @@
 using LogicGamer.Core.Tool.ObjectPool;
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Text;
 using LogicGamer.Core.Attributes;
 using LogicGamer.Core.Utilities;
 
@@ -9,21 +11,22 @@ namespace LogicGamer.Core.Tool
     /// <summary>
     /// 线程安全的通用数据容器，支持类型安全的键值存储
     /// </summary>
-    public sealed class Userdata:IObject
+    public sealed class Userdata : IObject
     {
-        [QuicklyEntry(Constants.QuicklyGroup.OBJECT_POOL_ROOT,"Userdata","Userdata对象池")]
-        public static ObjectPool<Userdata> GetObjectPool () => ObjectPool<Userdata>.Instance;
+        [QuicklyEntry(Constants.QuicklyGroup.OBJECT_POOL_ROOT, "Userdata", "Userdata对象池")]
+        public static ObjectPool<Userdata> GetObjectPool() => ObjectPool<Userdata>.Instance;
 
-        private ConcurrentDictionary<string, object> _data= new ConcurrentDictionary<string, object>();
+        private ConcurrentDictionary<string, object> _data = new ConcurrentDictionary<string, object>();
 
         public event Action<string, object> OnValueChange;
+
         /// <summary>
         /// 设置数据（泛型版本）
         /// </summary>
         public void Set<T>(string key, T value)
-        {      
+        {
             _data[key] = value;
-            OnValueChange?.Invoke(key,value);
+            OnValueChange?.Invoke(key, value);
         }
 
         /// <summary>
@@ -35,6 +38,7 @@ namespace LogicGamer.Core.Tool
             {
                 return typedValue;
             }
+
             return default;
         }
 
@@ -43,17 +47,18 @@ namespace LogicGamer.Core.Tool
         /// </summary>
         public bool Remove(string key)
         {
-            var success =  _data.TryRemove(key, out _);
+            var success = _data.TryRemove(key, out _);
             if (success)
             {
-                OnValueChange?.Invoke(key,null);
+                OnValueChange?.Invoke(key, null);
             }
+
             return success;
         }
 
-        public void OnInit(Userdata data=null)
+        public void OnInit(Userdata data = null)
         {
-            if (data!=null)
+            if (data != null)
             {
                 _data = new ConcurrentDictionary<string, object>(data._data);
             }
@@ -64,5 +69,47 @@ namespace LogicGamer.Core.Tool
             OnValueChange = null;
             _data.Clear();
         }
+
+        public override string ToString()
+        {
+            return ToJson(this, 0);
+        }
+
+        private string ToJson(Userdata data, int indentLevel)
+        {
+            var indent = new string(' ', indentLevel * 2);
+            var innerIndent = new string(' ', (indentLevel + 1) * 2);
+            var lines = new List<string> { indent + "{" };
+
+            foreach (var pair in data._data)
+            {
+                string key = pair.Key;
+                object value = pair.Value;
+
+                string valueStr;
+                if (value is Userdata nestedUserdata)
+                {
+                    valueStr = ToJson(nestedUserdata, indentLevel + 1);
+                }
+                else if (value is string s)
+                {
+                    valueStr = $"\"{s}\"";
+                }
+                else if (value is null)
+                {
+                    valueStr = "null";
+                }
+                else
+                {
+                    valueStr = value.ToString();
+                }
+
+                lines.Add($"{innerIndent}\"{key}\": {valueStr}");
+            }
+
+            lines.Add(indent + "}");
+            return string.Join("\n", lines);
+        }
+
     }
 }
