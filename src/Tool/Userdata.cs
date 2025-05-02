@@ -1,6 +1,8 @@
 using LogicGamer.Core.Tool.ObjectPool;
 using System;
 using System.Collections.Concurrent;
+using LogicGamer.Core.Attributes;
+using LogicGamer.Core.Utilities;
 
 namespace LogicGamer.Core.Tool
 {
@@ -9,7 +11,8 @@ namespace LogicGamer.Core.Tool
     /// </summary>
     public sealed class Userdata:IObject
     {
-        public static ObjectPool<Userdata> Pool => ObjectPool<Userdata>.Instance;
+        [QuicklyEntry(Constants.QuicklyGroup.OBJECT_POOL_ROOT,"Userdata","Userdata对象池")]
+        public static ObjectPool<Userdata> GetObjectPool () => ObjectPool<Userdata>.Instance;
 
         private ConcurrentDictionary<string, object> _data= new ConcurrentDictionary<string, object>();
 

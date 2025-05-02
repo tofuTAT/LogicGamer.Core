@@ -11,11 +11,16 @@ namespace LogicGamer.Core
     {
         private static Dictionary<Type,IEngine> _engines = new Dictionary<Type,IEngine>();
 
-        public static Logger Logger { get; private set; }
+        private static Logger printer;
+        
+        public static Logger Printer()
+        {
+            return printer;
+        }
 
         public static void Init(ILog logger,LogLevel level)
         {
-            Logger = new Logger(logger,level);
+            printer = new Logger(logger,level);
             if (_engines==null)
             {
                 _engines = new Dictionary<Type, IEngine>();

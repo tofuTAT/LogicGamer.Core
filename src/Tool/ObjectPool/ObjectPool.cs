@@ -29,7 +29,7 @@ namespace LogicGamer.Core.Tool.ObjectPool
                 obj.OnInit(data);
                 if (data!=null)
                 {
-                    Userdata.Pool.Return(data);
+                    Userdata.GetObjectPool().Return(data);
                 }
                 return obj;  // 池中没有对象，创建一个新的
             }

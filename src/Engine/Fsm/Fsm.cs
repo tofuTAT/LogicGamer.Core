@@ -65,7 +65,7 @@ namespace LogicGamer.Core.Engine.Fsm
             var oldState = CurrentState;
             CurrentState = registeredState;
             CurrentState.OnEnter(this,userdata);
-            Userdata.Pool.Return(userdata);
+            Userdata.GetObjectPool().Return(userdata);
             OnStateChange?.Invoke(oldState,CurrentState);
             StateStartTime = DateTime.Now;
         }
@@ -93,7 +93,7 @@ namespace LogicGamer.Core.Engine.Fsm
         public void OnInit(Userdata data)
         {
             Running = false;
-            Userdata = Userdata.Pool.Get();
+            Userdata = Userdata.GetObjectPool().Get();
             Name = data.Get<string>(FsmManager.NAME_KEY);
         }
 
@@ -103,7 +103,7 @@ namespace LogicGamer.Core.Engine.Fsm
             CurrentState?.OnExit(this);
             Running = false;
             states.Clear();
-            Userdata.Pool.Return(Userdata);
+            Userdata.GetObjectPool().Return(Userdata);
             Userdata = null;
         }
     }

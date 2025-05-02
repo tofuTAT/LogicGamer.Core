@@ -1,6 +1,8 @@
 using LogicGamer.Core.Tool;
 using System;
 using System.Collections.Generic;
+using LogicGamer.Core.Attributes;
+using LogicGamer.Core.Utilities;
 
 namespace LogicGamer.Core.Engine.Fsm
 {
@@ -20,7 +22,7 @@ namespace LogicGamer.Core.Engine.Fsm
             {
                 throw new Exception($"状态机 {fsmName} 已存在");
             }
-            Userdata args = Userdata.Pool.Get();
+            Userdata args =  Userdata.GetObjectPool().Get();
             args.Set(NAME_KEY,fsmName);
             var fsm = Fsm.Pool.Get(args);
             _allAgent.Add(fsmName,fsm);
@@ -62,6 +64,12 @@ namespace LogicGamer.Core.Engine.Fsm
                 Release(item.Key);
             }
             _allAgent.Clear();
+        }
+
+        [QuicklyEntry(Constants.QuicklyGroup.MANAGER_ROOT,"Fsm","状态机管理器")]
+        public static FsmManager GetInstance()
+        {
+            return Logic.GetEngine<FsmManager>();
         }
     }
 }
