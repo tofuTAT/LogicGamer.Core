@@ -2,7 +2,6 @@ using LogicGamer.Core.Tool.ObjectPool;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Text;
 using LogicGamer.Core.Attributes;
 using LogicGamer.Core.Utilities;
 

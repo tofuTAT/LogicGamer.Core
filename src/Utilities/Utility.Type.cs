@@ -19,7 +19,6 @@ namespace LogicGamer.Core.Utilities
                 {
                     assemblies = AppDomain.CurrentDomain.GetAssemblies();
                 }
-
                 // 遍历每个程序集，尝试获取类型
                 var types = assemblies.SelectMany(a =>
                 {
@@ -68,6 +67,14 @@ namespace LogicGamer.Core.Utilities
             /// 获取指定类型的类型信息
             /// </summary>
             public static System.Type Get<T>() => typeof(T);
+            
+            /// <summary>
+            /// 获取指定类型的类型信息
+            /// </summary>
+            public static System.Type Get(string fullName) {
+                return GetAllTypes()
+                    .First(t => t.FullName==fullName);
+            }
         }
     }
 }
