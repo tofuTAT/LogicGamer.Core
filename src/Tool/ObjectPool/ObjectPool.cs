@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace LogicGamer.Core.Tool.ObjectPool
 {
-    public class ObjectPool<T> : Singleton<ObjectPool<T>> where T : class,IObject, new()
+    public class ObjectPool<T> : Singleton<ObjectPool<T>>,IObjectPool<T> where T : class,IObject, new()
     {
         private readonly Stack<T> _pool = new Stack<T>();
         private readonly object _lock = new object(); // 锁对象
@@ -26,7 +26,7 @@ namespace LogicGamer.Core.Tool.ObjectPool
                 {
                     obj = new T(); 
                 }
-                obj.OnInit(data);
+                obj.OnReset(data);
                 if (data!=null)
                 {
                     Userdata.GetObjectPool().Return(data);

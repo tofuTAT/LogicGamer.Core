@@ -13,6 +13,7 @@ namespace LogicGamer.Core
         private static Dictionary<Type,IEngine> _engines = new Dictionary<Type,IEngine>();
 
         private static ILog printer;
+        
         public static void Init(ILog logger)
         {
             printer = logger;
@@ -30,11 +31,14 @@ namespace LogicGamer.Core
 
         public static void Start(Dictionary<Type,Userdata> args)
         {
+            Debug($"------------开始启动服务------------");
             foreach (var item in _engines)
             {
                 args.TryGetValue(item.Key, out var userdata);
+                Debug($"IEngine:{item.Key.Name} Userdata:{userdata?.ToString()}");
                 item.Value.OnStart(userdata);
             }
+            Debug($"------------服务启动完毕------------");
         }
         
         public static void Update(float logicTime,float deltaTime)

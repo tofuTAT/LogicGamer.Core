@@ -1,16 +1,18 @@
 using LogicGamer.Core.Tool.ObjectPool;
 using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using LogicGamer.Core.Attributes;
 using LogicGamer.Core.Utilities;
+using Newtonsoft.Json.Linq;
 
 namespace LogicGamer.Core.Tool
 {
     /// <summary>
     /// 线程安全的通用数据容器，支持类型安全的键值存储
     /// </summary>
-    public sealed class Userdata : IObject
+    public sealed class Userdata : IObject, IEnumerable<KeyValuePair<string, object>>
     {
         [QuicklyEntry(Constants.QuicklyGroup.OBJECT_POOL_ROOT, "Userdata", "Userdata对象池")]
         public static ObjectPool<Userdata> GetObjectPool() => ObjectPool<Userdata>.Instance;
@@ -37,7 +39,11 @@ namespace LogicGamer.Core.Tool
             {
                 return typedValue;
             }
-
+            var args = new JObject
+            {
+                ["hp"] = 100,
+                ["name"] = "Player1"
+            };
             return default;
         }
 
@@ -55,7 +61,7 @@ namespace LogicGamer.Core.Tool
             return success;
         }
 
-        public void OnInit(Userdata data = null)
+        public void OnReset(Userdata data = null)
         {
             if (data != null)
             {
@@ -69,9 +75,19 @@ namespace LogicGamer.Core.Tool
             _data.Clear();
         }
 
+        public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
+        {
+            return _data.GetEnumerator();
+        }
+
         public override string ToString()
         {
             return ToJson(this, 0);
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
         private string ToJson(Userdata data, int indentLevel)

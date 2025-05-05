@@ -8,35 +8,36 @@ namespace LogicGamer.Core.Engine.Fsm
     public class Fsm:IObject
     {
         public static ObjectPool<Fsm> Pool => ObjectPool<Fsm>.Instance;
-        private Dictionary<Type, IState> states = new Dictionary<Type, IState>();
-        public IState CurrentState { get; private set; }
+        private Dictionary<Type, StateBase> states = new Dictionary<Type, StateBase>();
+        public StateBase CurrentStateBase { get; private set; }
         public DateTime StateStartTime { get; private set; }
         public bool Running { get; private set; }
         public Userdata Userdata { get; private set; }
         public string Name { get; private set; }
 
-        public IReadOnlyDictionary<Type, IState> States => states;
+        public IReadOnlyDictionary<Type, StateBase> States => states;
 
         //前状态，后状态
-        public event Action<IState,IState> OnStateChange;
+        public event Action<StateBase,StateBase> OnStateChange;
 
         /// <summary>
         /// 添加状态
         /// </summary>
-        /// <param name="state">状态实例</param>
+        /// <param name="stateBase">状态实例</param>
         /// <exception cref="ArgumentNullException">state为null时抛出</exception>
         /// <exception cref="ArgumentException">同类型状态已存在时抛出</exception>
-        public void AddState(IState state)
+        public void AddState(StateBase stateBase)
         {
-            if (state == null) throw new ArgumentNullException(nameof(state));
+            if (stateBase == null) throw new ArgumentNullException(nameof(stateBase));
             
-            var stateType = state.GetType();
+            var stateType = stateBase.GetType();
             if (states.ContainsKey(stateType))
             {
                 throw new ArgumentException($"State type {stateType} already exists in FSM");
             }
 
-            states[stateType] = state;
+            states[stateType] = stateBase;
+            stateBase.OnInit(this);
         }
 
         /// <summary>
@@ -54,22 +55,22 @@ namespace LogicGamer.Core.Engine.Fsm
             }
 
             // 相同状态不切换
-            if (CurrentState?.GetType() == type) 
+            if (CurrentStateBase?.GetType() == type) 
                 return;
             if (!Running)
             {
                 Running = true;
             }
             
-            CurrentState?.OnExit(this);
-            var oldState = CurrentState;
-            CurrentState = registeredState;
-            CurrentState.OnEnter(this,userdata);
+            CurrentStateBase?.OnExit();
+            var oldState = CurrentStateBase;
+            CurrentStateBase = registeredState;
+            CurrentStateBase.OnEnter(userdata);
             if (userdata!=null)
             {
                 Userdata.GetObjectPool().Return(userdata);
             }
-            OnStateChange?.Invoke(oldState,CurrentState);
+            OnStateChange?.Invoke(oldState,CurrentStateBase);
             StateStartTime = DateTime.Now;
         }
 
@@ -77,7 +78,7 @@ namespace LogicGamer.Core.Engine.Fsm
         /// 通过泛型类型切换状态
         /// </summary>
         /// <typeparam name="T">状态类型</typeparam>
-        public void ChangeState<T>(Userdata userdata = null) where T : class, IState
+        public void ChangeState<T>(Userdata userdata = null) where T : StateBase 
         {
             ChangeState(typeof(T),userdata);
         }
@@ -90,12 +91,11 @@ namespace LogicGamer.Core.Engine.Fsm
         public void OnUpdate(float logicTime,float deltaTime)
         {
             if (!Running) return;
-            CurrentState?.OnUpdate(logicTime,deltaTime,this);
+            CurrentStateBase?.OnUpdate(logicTime,deltaTime);
         }
 
-        public void OnInit(Userdata data)
+        public void OnReset(Userdata data)
         {
-            Running = false;
             Userdata = Userdata.GetObjectPool().Get();
             Name = data.Get<string>(FsmManager.NAME_KEY);
         }
@@ -103,11 +103,11 @@ namespace LogicGamer.Core.Engine.Fsm
         public void OnReturn()
         {
             OnStateChange = null;
-            CurrentState?.OnExit(this);
+            CurrentStateBase?.OnExit();
             Running = false;
             states.Clear();
             Userdata.GetObjectPool().Return(Userdata);
-            Userdata = null;
+            Userdata.OnReturn();
         }
     }
 }

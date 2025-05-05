@@ -100,7 +100,7 @@ namespace LogicGamer.Core
                 {
                     
                     var method = item.Value;
-                    var attr = entryMethods.First(m => m.method.Name == method.Name).attr;
+                    var attr = entryMethods.First(m => m.method == method).attr;
                     var fullTypeName = method.DeclaringType!.FullName!.Replace('+', '.'); // 支持嵌套类
 
                     if (!string.IsNullOrWhiteSpace(attr.Description))

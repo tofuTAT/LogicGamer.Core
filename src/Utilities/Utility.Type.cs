@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace LogicGamer.Core.Utilities
 {
-    public static class Utility
+    public static partial class Utility
     {
         public static class Type
         {
