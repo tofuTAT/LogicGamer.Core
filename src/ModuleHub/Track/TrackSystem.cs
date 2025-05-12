@@ -43,38 +43,22 @@ namespace LogicGamer.Core.ModuleHub.Track
         {
             _queue.Enqueue((userdata, track));
             // 如果当前没有在处理任务，则启动处理
-            if (!_isProcessing)
-            {
-                ProcessQueue(); 
-            }
+            ProcessQueue(); 
         }
 
         /// <summary>
-        /// 异步串行处理队列中的任务。队列中的每个任务都将按照顺序依次执行。
+        /// 同步递归
         /// </summary>
         private void ProcessQueue()
         {
-            _isProcessing = true;
-
-            while (_queue.Count > 0)
+            if (_queue.Count==0)
             {
-                var (userdata, trackFunc) = _queue.Dequeue();
-
-                try
-                {
-                    // 执行任务
-                    var result = trackFunc(Sender,userdata);
-                    OnTrackEnd?.Invoke(userdata, result); // 任务完成时触发事件
-                }
-                catch (Exception ex)
-                {
-                    // 错误处理
-                    Logic.Error($"Track execution error: {ex.Message}");
-                    throw;
-                }
+                return;
             }
-
-            _isProcessing = false;
+            var (userdata, trackFunc) = _queue.Dequeue();
+            var result = trackFunc(Sender,userdata);
+            OnTrackEnd?.Invoke(userdata, result); // 任务完成时触发事件
+            ProcessQueue();
         }
     }
 }

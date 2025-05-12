@@ -4,7 +4,8 @@ namespace LogicGamer.Core.Engine.Entity
 {
     public interface IEntityAdapter
     {
-        void OnInit();
+        public IEntity Entity { get; }
+        void OnInit(IEntity entity);
         
         void OnShow(Userdata data);
         /// <summary>

@@ -104,6 +104,7 @@ namespace LogicGamer.Core.Engine.Fsm
         {
             OnStateChange = null;
             CurrentStateBase?.OnExit();
+            CurrentStateBase = null;
             Running = false;
             states.Clear();
             Userdata.GetObjectPool().Return(Userdata);
