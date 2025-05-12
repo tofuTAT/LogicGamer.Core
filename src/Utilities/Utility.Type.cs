@@ -43,15 +43,39 @@ namespace LogicGamer.Core.Utilities
                 return GetAllTypes(assemblies)
                     .Where(t => targetType.IsAssignableFrom(t) && t.IsClass && !t.IsAbstract);
             }
+            
+            
 
             /// <summary>
             /// 查找继承某个基类的所有非抽象类
             /// </summary>
-            public static IEnumerable<System.Type> GetDerivedTypes<TBase>(IEnumerable<Assembly> assemblies = null)
+            public static IEnumerable<System.Type> GetSubclasses<TBase>(IEnumerable<Assembly> assemblies = null)
             {
-                var baseType = typeof(TBase);
-                return GetAllTypes(assemblies)
-                    .Where(t => t.IsClass && !t.IsAbstract && t.IsSubclassOf(baseType));
+                return GetSubclasses(typeof(TBase),assemblies);
+            }
+            
+            
+            public static IEnumerable<System.Type> GetSubclasses(System.Type baseType,IEnumerable<Assembly> assemblies = null)
+            {
+                if (baseType.IsGenericTypeDefinition) // 如果是泛型定义
+                {
+                    return GetAllTypes(assemblies).Where(type => type.IsClass && !type.IsAbstract
+                                                                              && ((type.BaseType != null &&
+                                                                                      type.BaseType.IsGenericType
+                                                                                      && type.BaseType
+                                                                                          .GetGenericTypeDefinition() ==
+                                                                                      baseType)
+                                                                                  || type.GetInterfaces()
+                                                                                      .Any(i => i.IsGenericType &&
+                                                                                          i.GetGenericTypeDefinition() ==
+                                                                                          baseType)));
+                }
+                else // 如果是普通的基类或非泛型类型
+                {
+                    return GetAllTypes(assemblies)
+                        .Where(type => type.IsClass && !type.IsAbstract
+                                                    && baseType.IsAssignableFrom(type));
+                }
             }
 
             /// <summary>

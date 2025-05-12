@@ -1,14 +1,12 @@
-﻿using System;
-using LogicGamer.Core.Tool.ObjectPool;
+﻿using LogicGamer.Core.Tool;
 
 namespace LogicGamer.Core.Engine.Entity
 {
-    /// <summary>
-    /// 实体接口
-    /// </summary>
-    public interface IEntity:IObject
+    public interface IEntityAdapter
     {
-        string Location { get; }
+        void OnInit();
+        
+        void OnShow(Userdata data);
         /// <summary>
         /// 每帧逻辑更新。
         /// </summary>
@@ -16,6 +14,6 @@ namespace LogicGamer.Core.Engine.Entity
         /// <param name="deltaTime">距上次更新经过的时间（单位：秒）。</param>
         void OnUpdate(float logicTime, float deltaTime);
 
-        event Action<IEntityAdapter> AfterShow;
+        void OnClose();
     }
 }

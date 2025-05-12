@@ -7,5 +7,7 @@ namespace LogicGamer.Core.Engine.Entity
         IObjectPool<IEntity> EntityPool { get; }
 
         void SetGroup(string group, IEntity entity);
+
+        object GetGroupRoot(string rootName);
     }
 }

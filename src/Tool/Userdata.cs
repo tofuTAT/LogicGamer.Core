@@ -12,7 +12,7 @@ namespace LogicGamer.Core.Tool
     /// <summary>
     /// 线程安全的通用数据容器，支持类型安全的键值存储
     /// </summary>
-    public sealed class Userdata : IObject, IEnumerable<KeyValuePair<string, object>>
+    public  class Userdata :IUserdata, IObject, IEnumerable<KeyValuePair<string, object>>
     {
         [QuicklyEntry(Constants.QuicklyGroup.OBJECT_POOL_ROOT, "Userdata", "Userdata对象池")]
         public static ObjectPool<Userdata> GetObjectPool() => ObjectPool<Userdata>.Instance;
@@ -59,6 +59,11 @@ namespace LogicGamer.Core.Tool
             }
 
             return success;
+        }
+
+        public bool TryGet<T>(string key, out T value)
+        {
+            throw new NotImplementedException();
         }
 
         public void OnReset(Userdata data = null)

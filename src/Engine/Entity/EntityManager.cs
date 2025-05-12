@@ -32,7 +32,11 @@ namespace LogicGamer.Core.Engine.Entity
             list.Add(entity);
             return entity;
         }
-
+        
+        public object GetGroupRoot(string group)
+        {
+            return _entityHelper.GetGroupRoot(group);
+        }
         //根据location获取entity实例
         public List<IEntity> GetEntities(string location)
         {
@@ -68,7 +72,13 @@ namespace LogicGamer.Core.Engine.Entity
 
         public void OnUpdate(float logicTime, float deltaTime)
         {
-            
+            foreach (var item in _entities)
+            {
+                for (int i = item.Value.Count-1; i >=0 ; i--)
+                {
+                    item.Value[i].OnUpdate(logicTime,deltaTime);
+                }
+            }
         }
 
         public void ShutDown()
