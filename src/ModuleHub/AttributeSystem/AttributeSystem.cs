@@ -51,6 +51,14 @@ namespace LogicGamer.Core.ModuleHub.AttributeSystem
             OnNodeValueChanged?.Invoke(nodeKey,GetValue(nodeKey));
         }
 
+        public void ClearNode(string nodeKey)
+        {
+            if (_allNode.ContainsKey(nodeKey))
+            {
+                _allNode.Remove(nodeKey);
+            }
+        }
+
 
         public void RemoveNode(string nodeKey, string functionKey)
         {

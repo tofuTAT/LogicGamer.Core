@@ -12,7 +12,11 @@
         /// <param name="functionKey">功能键，用于标识来源或作用域（如 "Equipment_Sword"、"Buff_1"）。</param>
         /// <param name="value">属性值。</param>
         void AddNode(string nodeKey, string functionKey, int value);
-
+        /// <summary>
+        /// 添加一个属性节点。
+        /// </summary>
+        /// <param name="nodeKey">主属性键（如 "HP_Base"）。</param>
+        void ClearNode(string nodeKey);
         /// <summary>
         /// 移除指定的属性节点。
         /// </summary>
